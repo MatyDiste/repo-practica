@@ -1,7 +1,11 @@
 package isi.died.parcial01.ejercicio02.dominio;
 
+import java.util.Comparator;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import isi.died.parcial01.ejercicio02.dominio.Inscripcion.Estado;
 
 public class Alumno {
 	
@@ -44,9 +48,31 @@ public class Alumno {
 		e.setAlumno(this);
 	}
 	
-	public void addCursada(Inscripcion e) {
+	
+	public void addCursada(Inscripcion e) throws Exception{
+		if(this.materiasCursadas
+				.stream()
+				.anyMatch(insc -> 
+				insc.getMateria().getNombre().equals(e.getMateria().getNombre()) &&
+				insc.getEstado() != Estado.LIBRE)) {
+			//Si alguna inscripcion es de la materia que se quiere anotar
+			//y esa inscripcion no está en estado LIBRE lanzo excepcion
+			throw new Exception("El alumno ya esta inscripto en la materia");
+		}
+		
 		this.materiasCursadas.add(e);
 		e.setInscripto(this);
+	}
+	
+	public void promocionarMateria(String nMateria) {
+		Inscripcion insc= 
+			this.materiasCursadas
+			.stream()
+			.filter(m -> m.getMateria().getNombre().equals(nMateria)) //solo las inscripciones a esta materia
+			.max((a,b) -> a.getCicloLectivo() - b.getCicloLectivo()) //el ciclo lectivo mas grande
+			.get();
+		insc.setEstado(Estado.PROMOCIONADO);
+		
 	}
 
 }

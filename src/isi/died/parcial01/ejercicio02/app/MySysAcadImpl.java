@@ -1,9 +1,10 @@
 package isi.died.parcial01.ejercicio02.app;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import isi.died.parcial01.ejercicio02.db.BaseDeDatos;
+import isi.died.parcial01.ejercicio02.db.*;
 import isi.died.parcial01.ejercicio02.dominio.*;
 
 
@@ -32,15 +33,46 @@ public class MySysAcadImpl implements MySysAcad {
 		this.alumnos.add(d);
 	}
 	
+	public void registrarNota(Examen e, Integer nota) {
+		e.setNota(nota);
+		if(nota>=6) {
+			e.getAlumno().promocionarMateria(e.getMateria().getNombre());
+		}else {
+			//NO IMPLEMENTADO
+		}
+	}
+	
+	public Double promedioAprobados(Materia m) {
+		return m.getExamenes()
+				.stream()
+				.filter(e -> e.getNota()>6)
+				.mapToInt(e -> e.getNota())
+				.average()
+				.getAsDouble();
+	}
 
+	public List<Alumno> inscriptos(Materia m,Integer ciclo){
+		//No se como castear de Stream a List<Alumno>
+		return Arrays.asList(
+				m.getInscripciones()
+				.stream()
+				.filter(i -> i.getCicloLectivo()==ciclo)
+				.map(insc -> insc.getInscripto())
+				.sorted((a,b)-> a.getNombre().compareToIgnoreCase(b.getNombre()))
+				.toArray());
+	}
+	
 	@Override
-	public void inscribirAlumnoCursada(Docente d, Alumno a, Materia m, Integer cicloLectivo) {
+	public void inscribirAlumnoCursada(Docente d, Alumno a, Materia m, Integer cicloLectivo) throws Exception{
 		Inscripcion insc = new Inscripcion(cicloLectivo,Inscripcion.Estado.CURSANDO);
 		d.agregarInscripcion(insc);
 		a.addCursada(insc);
-		m.addInscripcion(insc);
-		// DESCOMENTAR Y gestionar excepcion
-		// DB.guardar(insc);
+		m.addInscripcion(insc); //El método addInscripcion lanza excepcion si el alumno ya esta inscripto
+		try {
+			DB.guardar(insc);
+		} catch(BaseDeDatosExcepcion dbe) {
+			throw new Exception("Error en la base de datos");
+		}
 	}
 
 	@Override

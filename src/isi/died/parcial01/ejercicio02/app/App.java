@@ -71,6 +71,7 @@ public class App {
 		Alumno a13 = new Alumno("Alumnno 13");
 		Alumno a14 = new Alumno("Alumnno 14");
 		Alumno a15 = new Alumno("Alumnno 15");
+		try {
 		sistema.registrarAlumnos(a1);
 		sistema.registrarAlumnos(a2);
 		sistema.registrarAlumnos(a3);
@@ -86,12 +87,13 @@ public class App {
 		sistema.registrarAlumnos(a13);
 		sistema.registrarAlumnos(a14);
 		sistema.registrarAlumnos(a15);
-
+		
 
 		
 		sistema.inscribirAlumnoCursada(prof1, a1, m1,2020);
 
 		sistema.inscribirAlumnoExamen(prof1, a1, m1);
+		}catch(Exception e) {/*EXCEPTION*/};
 	}
 	
 
